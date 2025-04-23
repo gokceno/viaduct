@@ -1,0 +1,23 @@
+{
+  "name": "viaduct",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/luxon": "^3.6.2",
+    "drizzle-kit": "^0.31.0"
+  },
+  "dependencies": {
+    "@drizzle-team/brocli": "0.11.0",
+    "@libsql/client": "^0.15.4",
+    "croner": "^9.0.0",
+    "drizzle-orm": "^0.42.0",
+    "luxon": "^3.6.1",
+    "winston": "^3.17.0",
+    "yaml": "^2.7.1",
+    "zod": "^3.24.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
