@@ -1,0 +1,26 @@
+name: Build Images and Push to Registry
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    name: Image Build and Push
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build CLI and Push to Registry
+        id: build_push_cli
+        uses: docker/build-push-action@v5
+        with:
+          build-args: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          push: true
+          tags: ghcr.io/gokceno/viaduct:latest
