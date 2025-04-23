@@ -9,6 +9,10 @@
   },
   "dependencies": {
     "@drizzle-team/brocli": "0.11.0",
+    "@langchain/community": "^0.3.41",
+    "@langchain/core": "^0.3.47",
+    "@langchain/langgraph": "^0.2.65",
+    "@langchain/openai": "^0.5.6",
     "@libsql/client": "^0.15.4",
     "croner": "^9.0.0",
     "drizzle-orm": "^0.42.0",
