@@ -1,0 +1,9 @@
+services:
+  worker:
+    build: .
+    container_name: worker
+    command: src/index.ts worker
+    volumes:
+      - ./db:/app/db
+      - ./viaduct.yml:/app/viaduct.yml
+    restart: unless-stopped
