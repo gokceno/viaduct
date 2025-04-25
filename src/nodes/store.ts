@@ -1,4 +1,4 @@
-import { type JobApplicationState } from "../state";
+import { type JobApplicationState } from "../types";
 
 const internship = (state: JobApplicationState) => {
   console.log("Storing internship application in database");

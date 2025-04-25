@@ -9,4 +9,6 @@ interface JobApplicationState {
   error: object | null;
 }
 
-export { type JobApplicationState };
+type Config = {};
+
+export { type Config, type JobApplicationState };

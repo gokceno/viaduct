@@ -1,4 +1,4 @@
-import { type JobApplicationState } from "state";
+import { type JobApplicationState } from "types";
 
 const shouldProcessAsJobApplication = (state: JobApplicationState) => {
   if (state.isJobApplication) {

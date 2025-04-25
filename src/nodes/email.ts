@@ -1,4 +1,4 @@
-import { type JobApplicationState } from "../state";
+import { type JobApplicationState } from "../types";
 
 const check = async (state: JobApplicationState) => {
   console.log("Checking Gmail for unread messages");
