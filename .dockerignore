@@ -7,6 +7,6 @@ LICENSE
 .git
 .gitignore
 .env
-**/.DS_Store
-**/birthdayz.yml
-**/birthdayz.sqlite
+.DS_Store
+viaduct.yml
+viaduct.sqlite
