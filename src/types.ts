@@ -1,9 +1,9 @@
 interface JobApplicationState {
-  emails: string[];
+  emails: string[] | [];
   currentEmail: string | null;
   isJobApplication: boolean | null;
   isRelevantApplication: boolean | null;
-  isInternshipApplication: boolean;
+  isInternshipApplication: boolean | null;
   cvData: object | null;
   draftResponse: object | null;
   error: object | null;

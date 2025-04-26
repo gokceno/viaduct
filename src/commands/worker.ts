@@ -1,5 +1,10 @@
 import { command, string } from "@drizzle-team/brocli";
-import { StateGraph, type StateGraphArgs } from "@langchain/langgraph";
+import {
+  StateGraph,
+  type StateGraphArgs,
+  START,
+  END,
+} from "@langchain/langgraph";
 import { type JobApplicationState } from "../types";
 import {
   check,
@@ -31,6 +36,7 @@ const worker = command({
       currentEmail: null,
       isJobApplication: null,
       isRelevantApplication: null,
+      isInternshipApplication: null,
     };
 
     const workflow = new StateGraph({ channels });
@@ -44,17 +50,17 @@ const worker = command({
       .addNode("storeInternshipApplication", internship)
       .addNode("storeJobApplication", job)
       .addNode("draftFollowUpEmail", draftFollowUp)
-      .addEdge("__start__", "checkGmail")
+      .addEdge(START, "checkGmail")
       .addEdge("checkGmail", "analyzeEmail")
       .addConditionalEdges("analyzeEmail", shouldProcessAsJobApplication, {
         isJobApplication: "evaluateRelevance",
-        notJobApplication: "checkGmail",
+        notJobApplication: END,
       })
       .addConditionalEdges("evaluateRelevance", checkApplicationRelevance, {
         relevantApplication: "extractCV",
         irrelevantApplication: "draftRejectionEmail",
       })
-      .addEdge("draftRejectionEmail", "__end__")
+      .addEdge("draftRejectionEmail", END)
       .addEdge("extractCV", "classifyApplicationType")
       .addConditionalEdges(
         "classifyApplicationType",
@@ -66,7 +72,7 @@ const worker = command({
       )
       .addEdge("storeInternshipApplication", "draftFollowUpEmail")
       .addEdge("storeJobApplication", "draftFollowUpEmail")
-      .addEdge("draftFollowUpEmail", "__end__");
+      .addEdge("draftFollowUpEmail", END);
 
     const app = workflow.compile();
     try {
