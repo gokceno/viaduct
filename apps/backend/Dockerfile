@@ -41,4 +41,6 @@ ENV STATIC_DIR=./public
 
 EXPOSE 3000
 
+LABEL org.opencontainers.source=https://github.com/gokceno/viaduct/
+
 CMD ["bun", "run", "apps/backend/src/index.ts"]
