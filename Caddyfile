@@ -1,0 +1,15 @@
+{
+    auto_https off
+}
+
+auth.viaduct.brewww.net {
+    reverse_proxy auth:3000
+}
+
+viaduct.brewww.net {
+    forward_auth auth:3000 {
+        uri /api/auth/caddy
+        copy_headers Remote-User Remote-Name Remote-Email Remote-Groups
+    }
+    reverse_proxy app:3000
+}

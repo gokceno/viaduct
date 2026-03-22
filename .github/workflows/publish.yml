@@ -1,0 +1,39 @@
+name: Build Images and Push to Registry
+
+on:
+  push:
+    tags:
+      - "@viaduct/backend@*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    name: Build and Push Backend Image
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/@viaduct/backend@}" >> $GITHUB_OUTPUT
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Backend and Push to Registry
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/backend/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/gokceno/viaduct:latest
+            ghcr.io/gokceno/viaduct:${{ steps.version.outputs.VERSION }}

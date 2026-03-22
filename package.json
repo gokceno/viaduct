@@ -1,0 +1,19 @@
+{
+  "name": "viaduct",
+  "private": true,
+  "workspaces": [
+    "apps/backend",
+    "apps/frontend",
+    "packages/types"
+  ],
+  "scripts": {
+    "dev": "bun run --cwd apps/backend dev & bun run --cwd apps/frontend dev",
+    "build": "bun run --cwd apps/backend build && bun run --cwd apps/frontend build"
+  },
+  "dependencies": {
+    "luxon": "^3.7.2"
+  },
+  "devDependencies": {
+    "@types/luxon": "^3.7.1"
+  }
+}

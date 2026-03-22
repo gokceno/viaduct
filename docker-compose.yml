@@ -1,0 +1,30 @@
+services:
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+
+  auth:
+    image: ghcr.io/steveiliop56/tinyauth:v5
+    restart: unless-stopped
+    env_file: .env.tinyauth
+    volumes:
+      - viaduct_data:/data
+
+  app:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - apps/backend/.env
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - viaduct_data:/data
+
+volumes:
+  viaduct_data:
+  caddy_data:

@@ -1,0 +1,25 @@
+# Dependencies (rebuilt inside Docker)
+node_modules/
+apps/*/node_modules/
+packages/*/node_modules/
+
+# Build output
+dist/
+apps/*/dist/
+
+# Runtime data
+apps/backend/data/
+data/
+
+# Env files
+.env
+.env.*
+apps/backend/.env
+apps/backend/.env.*
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
