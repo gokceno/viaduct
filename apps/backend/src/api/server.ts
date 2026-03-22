@@ -1,7 +1,9 @@
 import { Hono } from "hono";
+import { getCookie } from "hono/cookie";
 import { serveStatic } from "hono/bun";
 import { ZodError } from "zod";
 import { DateTime, Duration } from "luxon";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 import {
   getAllChats,
   getDashboardChats,
@@ -33,10 +35,19 @@ import {
 } from "@viaduct/types";
 
 const STATIC_DIR = process.env.STATIC_DIR ?? "./public";
-// Fallback username when no Remote-User header is present (local dev without Traefik+TinyAuth).
-const DEFAULT_USER = process.env.DEFAULT_USER ?? "local";
-// Public URL of TinyAuth — returned by /api/config so the frontend can build logout URLs.
-const TINYAUTH_URL = process.env.TINYAUTH_URL ?? "";
+// Cloudflare Access — team domain and application AUD tag for JWT validation.
+// Example: CF_TEAM_DOMAIN=https://myteam.cloudflareaccess.com
+const CF_TEAM_DOMAIN = process.env.CF_TEAM_DOMAIN ?? "";
+const CF_AUD = process.env.CF_AUD ?? "";
+// Fallback username for local dev (no CF tunnel). Leave empty in production.
+const DEFAULT_USER = process.env.DEFAULT_USER ?? "";
+
+// ── CF Access JWKS client ─────────────────────────────────────────────────────
+// Created once at startup if CF_TEAM_DOMAIN is configured. jose caches the key
+// set internally and handles key rotation automatically.
+const JWKS = CF_TEAM_DOMAIN
+  ? createRemoteJWKSet(new URL(`${CF_TEAM_DOMAIN}/cdn-cgi/access/certs`))
+  : null;
 
 // ── Summarize cooldown ────────────────────────────────────────────────────────
 // Prevents repeated manual triggers from hammering the Gemini API.
@@ -63,15 +74,38 @@ export function createServer() {
   });
 
   // ── Auth middleware ────────────────────────────────────────────────────────
-  // Traefik handles forward-auth against TinyAuth and injects Remote-User on
-  // every authenticated request. We just read that header here.
-  // In local dev (no Traefik), DEFAULT_USER is used as a fallback.
+  // In production, Cloudflare Access sits in front and injects a signed JWT as
+  // both the Cf-Access-Jwt-Assertion header and the CF_Authorization cookie.
+  // We validate that JWT here and extract the user's email as the username.
+  // In local dev (CF_TEAM_DOMAIN unset), DEFAULT_USER is used as a fallback.
   app.use("*", async (c, next) => {
-    const username = c.req.header("Remote-User") ?? DEFAULT_USER;
-    const userId = resolveUser(username);
-    c.set("userId", userId);
-    c.set("username", username);
-    await next();
+    if (!JWKS) {
+      // Local dev — no CF tunnel configured
+      const username = DEFAULT_USER || "local";
+      c.set("userId", resolveUser(username));
+      c.set("username", username);
+      return next();
+    }
+
+    const token =
+      c.req.header("Cf-Access-Jwt-Assertion") ??
+      getCookie(c, "CF_Authorization");
+
+    if (!token) return c.json({ error: "Unauthorized" }, 401);
+
+    try {
+      const { payload } = await jwtVerify(token, JWKS, {
+        issuer: CF_TEAM_DOMAIN,
+        audience: CF_AUD,
+      });
+      const email = payload.email as string | undefined;
+      if (!email) return c.json({ error: "Unauthorized" }, 401);
+      c.set("userId", resolveUser(email));
+      c.set("username", email);
+      await next();
+    } catch {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
   });
 
   // ── Me ────────────────────────────────────────────────────────────────────
@@ -218,7 +252,7 @@ export function createServer() {
     const db = getDb(c.get("userId"));
     const s = getAllSettings(db);
     return c.json({
-      tinyauthUrl: TINYAUTH_URL,
+      logoutUrl: CF_TEAM_DOMAIN ? `${CF_TEAM_DOMAIN}/cdn-cgi/access/logout` : "",
       quiet_period_minutes: Number(s.quiet_period_minutes ?? "30"),
       allow_all_contacts: s.allow_all_contacts === "1",
       allow_all_groups: s.allow_all_groups === "1",

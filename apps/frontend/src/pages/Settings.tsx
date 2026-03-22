@@ -420,12 +420,9 @@ export default function Settings() {
           </div>
           <button
             className="outline small"
-            onClick={async () => {
-              const tinyauthUrl = config?.tinyauthUrl ?? "";
-              if (tinyauthUrl) {
-                await fetch(`${tinyauthUrl}/api/user/logout`, { method: "POST" }).catch(() => {});
-                window.location.href = tinyauthUrl;
-              }
+            onClick={() => {
+              const logoutUrl = config?.logoutUrl ?? "";
+              if (logoutUrl) window.location.href = logoutUrl;
             }}
           >
             Log out

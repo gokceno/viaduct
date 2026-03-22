@@ -13,7 +13,7 @@
     },
     "apps/backend": {
       "name": "@viaduct/backend",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dependencies": {
         "@google/generative-ai": "^0.21.0",
         "@hapi/boom": "^10.0.1",
@@ -22,6 +22,7 @@
         "@whiskeysockets/baileys": "^6.7.18",
         "drizzle-orm": "^0.45.1",
         "hono": "^4.6.0",
+        "jose": "^6.2.2",
         "pino": "^9.4.0",
         "pino-pretty": "^11.3.0",
         "qrcode": "^1.5.4",
@@ -640,6 +641,8 @@
     "is-glob": ["is-glob@4.0.3", "", { "dependencies": { "is-extglob": "^2.1.1" } }, "sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg=="],
 
     "isexe": ["isexe@2.0.0", "", {}, "sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw=="],
+
+    "jose": ["jose@6.2.2", "", {}, "sha512-d7kPDd34KO/YnzaDOlikGpOurfF0ByC2sEV4cANCtdqLlTfBlw2p14O/5d/zv40gJPbIQxfES3nSx1/oYNyuZQ=="],
 
     "joycon": ["joycon@3.1.1", "", {}, "sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw=="],
 

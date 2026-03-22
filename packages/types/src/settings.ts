@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const AppConfigSchema = z.object({
-  tinyauthUrl: z.string().default(""),
+  logoutUrl: z.string().default(""),
   quiet_period_minutes: z.number().int().min(1),
   allow_all_contacts: z.boolean(),
   allow_all_groups: z.boolean(),
